@@ -1,4 +1,5 @@
 import {Sequelize, DataTypes, Model} from "sequelize";
+import User from "./user.js";
 const sequelize = new Sequelize('sqlite:./data/db.sqlite');
 
 class Post extends Model {}
@@ -17,10 +18,6 @@ Post.init(
         },
         content: {
             type: DataTypes.STRING,
-            allowNull: false,
-        },
-        userId: {
-            type: DataTypes.UUID,
             allowNull: false,
         },
     },

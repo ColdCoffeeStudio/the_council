@@ -5,11 +5,11 @@ class User extends Model{}
 
 User.init(
     {
-        id: {
-            type: DataTypes.INTEGER,
+        email: {
+            type: DataTypes.STRING,
             allowNull: false,
+            unique: true,
             primaryKey: true,
-            autoIncrement: true,
         },
         firstName: {
             type: DataTypes.STRING,
@@ -22,10 +22,6 @@ User.init(
         picturePath: {
             type: DataTypes.STRING,
             allowNull: true,
-        },
-        email: {
-            type: DataTypes.STRING,
-            allowNull: false,
         },
         password: {
             type: DataTypes.STRING,

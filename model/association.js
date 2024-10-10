@@ -12,6 +12,10 @@ export default function associations(){
     User.hasMany(Comment);
     Comment.belongsTo(User);
 
+    // Handling Post-Comment relationship
+    Post.hasMany(Comment);
+    Comment.belongsTo(Post);
+
     // Handling User-User relationship
     User.belongsToMany(User, {as: 'following', through: Subscription});
     User.belongsToMany(User, {as: 'followed', through: Subscription});

@@ -15,14 +15,6 @@ Comment.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        userId: {
-            type: DataTypes.UUID,
-            allowNull: false,
-        },
-        postId: {
-            type: DataTypes.UUID,
-            allowNull: false,
-        }
     },
     {
         sequelize,

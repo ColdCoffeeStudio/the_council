@@ -4,21 +4,21 @@ const sequelize = new Sequelize('sqlite:./data/db.sqlite');
 class Subscription extends Model{}
 
 Subscription.init(
-    {
-        followingId: {
-            type: DataTypes.UUID,
-            allowNull: false,
-            primaryKey: true,
-        },
-        followedId: {
-            type: DataTypes.UUID,
-            allowNull: false,
-            primaryKey: true,
+{
+    followingEmail: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true,
     },
+    followedEmail: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true,
     },
-    {
-        sequelize,
-        modelName: 'Subscription',
+},
+{
+    sequelize,
+    modelName: 'Subscription',
     },
 );
 

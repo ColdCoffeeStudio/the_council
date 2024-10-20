@@ -23,4 +23,3 @@ Subscription.init(
 );
 
 export default Subscription;
-console.log(Subscription === sequelize.models.Subscription);

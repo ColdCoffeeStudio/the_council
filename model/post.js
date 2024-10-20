@@ -1,5 +1,4 @@
 import {Sequelize, DataTypes, Model} from "sequelize";
-import User from "./user.js";
 const sequelize = new Sequelize('sqlite:./data/db.sqlite');
 
 class Post extends Model {}
@@ -20,6 +19,10 @@ Post.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        userEmail: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        }
     },
     {
         sequelize,
@@ -28,4 +31,3 @@ Post.init(
 );
 
 export default Post;
-console.log(Post === sequelize.models.Post);

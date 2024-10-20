@@ -15,6 +15,14 @@ Comment.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        userEmail: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        postId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        }
     },
     {
         sequelize,
@@ -23,4 +31,3 @@ Comment.init(
 );
 
 export default Comment;
-console.log(Comment === sequelize.models.Comment);

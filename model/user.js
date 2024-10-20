@@ -35,4 +35,3 @@ User.init(
 );
 
 export default User;
-console.log(User === sequelize.models.User);

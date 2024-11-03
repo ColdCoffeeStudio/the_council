@@ -1,11 +1,12 @@
 import express from 'express'
-import {userRouter} from "./router/user.js";
 // import User from "./model/user.js";
 // import Post from "./model/post.js";
 // import Comment from "./model/comment.js";
 // import Subscription from "./model/subscription.js";
 // import {sequelize} from "./data/connection.js";
+import {userRouter} from "./router/user.js";
 import {postRouter} from "./router/post.js";
+import {commentRouter} from "./router/comment.js";
 
 const app = express();
 const port = 3000;
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/post", postRouter);
+app.use("/api/v1/comment", commentRouter);
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);

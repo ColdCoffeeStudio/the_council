@@ -1,9 +1,10 @@
-import User from "../model/user.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {Op} from "sequelize";
+
+import User from "../model/user.js";
 import {CustomError} from "../middleware/CustomError.js";
 import Subscription from "../model/subscription.js";
-import {Op} from "sequelize";
 
 const saltRounds = 10;
 const SECRET = "1234";

@@ -1,6 +1,7 @@
-import Post from "../model/post.js";
 import {CustomError} from "../middleware/CustomError.js";
 import User from "../model/user.js";
+import Post from "../model/post.js";
+import Comment from "../model/comment.js";
 import Subscription from "../model/subscription.js";
 
 function throwError(errorStatus, errorMessage) {
@@ -76,14 +77,57 @@ export async function postFromFollowed(userEmail) {
                 creators.push(creatorsRow.dataValues.followedEmail);
             }
 
-            return await Post.findAll({
+             await Post.findAll({
                 where: {
                     userEmail: creators
                 }
             });
 
         }catch (err){
-            throwError(500, "controller/user.js - postFromFollowed - " + err.message);
+            throwError(500, "controller/post.js - postFromFollowed - " + err.message);
+        }
+    }
+}
+
+export async function commentFromSinglePost(postId) {
+    if(postId){
+        try{
+            let comments = [];
+            let commentsRawData = await Comment.findAll({
+                where: {
+                    postId: postId
+                }
+            });
+
+            for (let comment of commentsRawData) {
+                console.log(comment);
+                comments.push(comment.dataValues);
+            }
+
+            return comments;
+        }catch(err){
+            throwError(500, err.message);
+        }
+    }
+}
+
+export async function commentFromPosts(posts){
+    if(posts){
+        try{
+            let content = [];
+            for (const post of posts) {
+                if(post.id){
+                    let comments = await commentFromSinglePost(post.id);
+                    content.push({post: post, comments: comments});
+                }else{
+                    throwError(500, "controller/post.js - commentFromPosts - A Post must contain an ID (Post.id).");
+                }
+            }
+
+            return content;
+
+        }catch(err){
+            throwError(500, "controller/post.js - commentFromPosts - " + err.message);
         }
     }
 }

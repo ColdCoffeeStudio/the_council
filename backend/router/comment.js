@@ -40,7 +40,7 @@ commentRouter.post('/create_comment', asyncHandler(async (req, res) => {
     }
 }));
 
-commentRouter.put('/update-comment/:id', asyncHandler(async (req, res) => {
+commentRouter.put('/update_comment/:id', asyncHandler(async (req, res) => {
     try{
         await updateComment(req.params.id, req.body.new_content, req.user.dataValues.email);
         res.status(201).json();
@@ -49,7 +49,7 @@ commentRouter.put('/update-comment/:id', asyncHandler(async (req, res) => {
     }
 }))
 
-commentRouter.delete('/delete-comment/:id', asyncHandler(async (req, res) => {
+commentRouter.delete('/delete_comment/:id', asyncHandler(async (req, res) => {
     try{
         await deleteComment(req.params.id, req.user.dataValues.email);
         res.status(201).json();

@@ -3,7 +3,7 @@ import {CustomError} from "../middleware/CustomError.js";
 import {asyncHandler} from "../utils/asyncHandler.js";
 import {auth} from '../middleware/auth.js';
 
-import {allComments, createComment, specificComment, userComments} from "../controller/comment.js";
+import {allComments, createComment, specificComment, userComments, updateComment, deleteComment} from "../controller/comment.js";
 export const commentRouter = express.Router();
 
 commentRouter.use(auth);
@@ -22,6 +22,15 @@ commentRouter.get('/id/:id', asyncHandler(async (req, res) => {
     }
 }));
 
+commentRouter.get('/from_user/:email', asyncHandler(async (req, res) => {
+    if(req.params.email){
+        const comments = await userComments(req.params.email);
+        res.status(201).json(comments);
+    }else{
+        throw new CustomError(500, 'The request body must contain the user email.');
+    }
+}));
+
 commentRouter.post('/create_comment', asyncHandler(async (req, res) => {
     if(req.body.content && req.user.dataValues.email && req.body.postId){
         await createComment(req.body.content, req.user.dataValues.email, req.body.postId);
@@ -31,11 +40,20 @@ commentRouter.post('/create_comment', asyncHandler(async (req, res) => {
     }
 }));
 
-commentRouter.get('/from_user/:email', asyncHandler(async (req, res) => {
-    if(req.params.email){
-        const comments = await userComments(req.params.email);
-        res.status(201).json(comments);
-    }else{
-        throw new CustomError(500, 'The request body must contain the user email.');
+commentRouter.put('/update-comment/:id', asyncHandler(async (req, res) => {
+    try{
+        await updateComment(req.params.id, req.body.new_content, req.user.dataValues.email);
+        res.status(201).json();
+    }catch(err){
+        throw new CustomError(err.status, err.message);
     }
-}));
+}))
+
+commentRouter.delete('/delete-comment/:id', asyncHandler(async (req, res) => {
+    try{
+        await deleteComment(req.params.id, req.user.dataValues.email);
+        res.status(201).json();
+    }catch(err){
+        throw new CustomError(err.status, err.message);
+    }
+}))

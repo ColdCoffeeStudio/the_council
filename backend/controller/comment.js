@@ -1,5 +1,8 @@
 import {CustomError} from "../middleware/CustomError.js";
 import Comment from "../model/comment.js";
+import Subscription from "../model/subscription.js";
+import Post from "../model/post.js";
+import {Op} from "sequelize";
 
 function throwError(errorStatus, errorMessage) {
     throw new CustomError(errorMessage, errorMessage);
@@ -31,7 +34,7 @@ export async function specificComment(commentId) {
             throwError(err.status, err.message);
         }
     }else{
-        throwError(500, err.message);
+        throwError(500, 'controller/comment.js - specificComment - You must specify the comment ID.');
     }
 }
 
@@ -54,18 +57,46 @@ export async function userComments(userEmail) {
             throwError(err.status, err.message);
         }
     }else{
-        throwError(500, err.message);
+        throwError(500, 'controller/comment.js - userComments - You must specify the user email.');
     }
 }
 
 export async function createComment(commentContent, userEmail, postId) {
     if(commentContent && userEmail && postId){
         try{
-            await Comment.create({
-                content: commentContent,
-                userEmail: userEmail,
-                postId: postId,
+            const followedCreatorsRawData = await Subscription.findAll({
+                where:{
+                    followingEmail: userEmail,
+                }
             });
+            
+            let followedCreatorsEmails = [userEmail];
+            for (const followedCreator of followedCreatorsRawData) {
+                followedCreatorsEmails.push(followedCreator.dataValues.followedEmail);
+            }
+
+            console.log(followedCreatorsEmails);
+            
+            const post = await Post.findOne({
+                where:{
+                    [Op.and]:{
+                        id: postId,
+                        userEmail: followedCreatorsEmails,
+                    }
+                },
+            });
+
+            if(post){
+                await Comment.create({
+                    content: commentContent,
+                    userEmail: userEmail,
+                    postId: postId,
+                });
+            }else{
+                throwError(500, 'controller/comment.js - createComment - Post not found. This may be because you aren\'t following this creator.');
+            }
+
+
         }catch(err){
             throwError(500, 'controller/comment.js - createComment - ' + err.message);
         }

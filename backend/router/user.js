@@ -1,5 +1,5 @@
 import express from "express";
-import {connectUser, createUser, subscribeToUser, unsubscribeFromUser} from "../controller/user.js";
+import {connectUser, createUser, deleteAccount, updateAccount, subscribeToUser, unsubscribeFromUser} from "../controller/user.js";
 import {CustomError} from "../middleware/CustomError.js";
 import {asyncHandler} from "../utils/asyncHandler.js";
 import {auth} from "../middleware/auth.js";
@@ -37,6 +37,15 @@ userRouter.post('/subscribe', auth, asyncHandler(async (req, res) => {
 
 }));
 
+userRouter.put('/update_account', auth, asyncHandler(async (req, res) => {
+    if(req.user.dataValues.email){
+        await updateAccount(req.user.dataValues.email, req.body.firstName, req.body.lastName, req.body.picturePath);
+        res.status(201).json();
+    }else{
+        throw new CustomError(401, "Authentication needed.")
+    }
+}));
+
 userRouter.delete('/unsubscribe', auth, asyncHandler(async (req, res) => {
     if(req.user.dataValues.email){
         if(req.user.dataValues.email && req.body.subscribeToEmail){
@@ -49,4 +58,13 @@ userRouter.delete('/unsubscribe', auth, asyncHandler(async (req, res) => {
         throw new CustomError(401, "Authentication needed.")
     }
 
+}));
+
+userRouter.delete('/delete_account/:email', auth, asyncHandler(async (req, res) => {
+    if(req.user.dataValues.email){
+        await deleteAccount(req.user.dataValues.email, req.params.email);
+        res.status(201).json();
+    }else{
+        throw new CustomError(401, "Authentication needed.")
+    }
 }));

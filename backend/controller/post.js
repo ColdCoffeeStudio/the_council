@@ -1,6 +1,7 @@
-import Post from "../model/post.js";
 import {CustomError} from "../middleware/CustomError.js";
 import User from "../model/user.js";
+import Post from "../model/post.js";
+import Comment from "../model/comment.js";
 import Subscription from "../model/subscription.js";
 
 function throwError(errorStatus, errorMessage) {
@@ -71,19 +72,60 @@ export async function postFromFollowed(userEmail) {
             });
 
             let creators = [];
-            console.log(creatorsRawData);
             for (const creatorsRow of creatorsRawData) {
                 creators.push(creatorsRow.dataValues.followedEmail);
             }
 
-            return await Post.findAll({
+             await Post.findAll({
                 where: {
                     userEmail: creators
                 }
             });
 
         }catch (err){
-            throwError(500, "controller/user.js - postFromFollowed - " + err.message);
+            throwError(500, "controller/post.js - postFromFollowed - " + err.message);
+        }
+    }
+}
+
+export async function commentFromSinglePost(postId) {
+    if(postId){
+        try{
+            let comments = [];
+            let commentsRawData = await Comment.findAll({
+                where: {
+                    postId: postId
+                }
+            });
+
+            for (let comment of commentsRawData) {
+                comments.push(comment.dataValues);
+            }
+
+            return comments;
+        }catch(err){
+            throwError(500, err.message);
+        }
+    }
+}
+
+export async function commentFromPosts(posts){
+    if(posts){
+        try{
+            let content = [];
+            for (const post of posts) {
+                if(post.id){
+                    let comments = await commentFromSinglePost(post.id);
+                    content.push({post: post, comments: comments});
+                }else{
+                    throwError(500, "controller/post.js - commentFromPosts - A Post must contain an ID (Post.id).");
+                }
+            }
+
+            return content;
+
+        }catch(err){
+            throwError(500, "controller/post.js - commentFromPosts - " + err.message);
         }
     }
 }
@@ -101,5 +143,69 @@ export async function createPost(userEmail, postTitle, postContent){
         }
     }else{
         throwError(500, 'controller/post.js - createPost - You must pass a title, a content and an email to create a post.');
+    }
+}
+
+export async function updatePost(postId, postTitle, postContent, userEmail) {
+    if(postId){
+
+        const postRawData = await Post.findOne({
+            where:{
+                id: postId,
+            },
+        });
+
+        if(postRawData && postRawData.dataValues){
+
+            const post = postRawData.dataValues;
+
+            if(userEmail && userEmail === post.userEmail){
+
+                console.log(postTitle + ' VS ' + post.title + ' - ' + postContent + ' VS ' + post.content);
+
+                if((postTitle && postTitle !== post.title) || (postContent && postContent !== post.content)){
+                    if(postTitle){
+                        await postRawData.update({ title: postTitle });
+                    }
+                    if(postContent){
+                        await postRawData.update({ content: postContent });
+                    }
+
+                    console.log(postRawData);
+                    await postRawData.save();
+                }else{
+                    throwError(500, 'controller/post.js - updatePost - The post must be updated with new information.');
+                }
+            }else{
+                throwError(500, 'controller/post.js - updateComment - The user should be the person that posts the given post.');
+            }
+        }else{
+            throwError(500, 'controller/post.js - updateComment - No post found.');
+        }
+    }else{
+        throwError(500, 'controller/post.js - updateComment - You must specify the post ID.');
+    }
+}
+
+export async function deletePost(postId, userEmail) {
+    if(postId){
+
+        const post = await Post.findOne({
+            where:{
+                id: postId,
+            },
+        });
+
+        if(post){
+            if(userEmail && userEmail === post.userEmail){
+                await post.destroy();
+            }else{
+                throwError(500, 'controller/post.js - deletePost - The user should be the person that posts the given post.');
+            }
+        }else{
+            throwError(500, 'controller/post.js - deletePost - No post found.');
+        }
+    }else{
+        throwError(500, 'controller/comment.js - deletePost - You must specify the comment ID.');
     }
 }

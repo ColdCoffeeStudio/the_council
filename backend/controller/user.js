@@ -1,9 +1,10 @@
-import User from "../model/user.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {Op} from "sequelize";
+
+import User from "../model/user.js";
 import {CustomError} from "../middleware/CustomError.js";
 import Subscription from "../model/subscription.js";
-import {Op} from "sequelize";
 
 const saltRounds = 10;
 const SECRET = "1234";
@@ -106,6 +107,43 @@ export async function subscribeToUser(subscriberEmail, creatorEmail){
     }
 }
 
+export async function updateAccount(authEmail, firstName, lastName, picturePath){
+    if(authEmail){
+
+        const userRawData = await User.findOne({
+            where:{
+                email: authEmail,
+            },
+        });
+
+        if(userRawData && userRawData.dataValues){
+
+            const user = userRawData.dataValues;
+
+            if((firstName && firstName !== user.firstName) || (lastName && lastName !== user.lastName) || (picturePath && picturePath !== user.picturePath)){
+                if(firstName){
+                    await userRawData.update({ firstName: firstName });
+                }
+                if(lastName){
+                    await userRawData.update({ lastName: lastName });
+                }
+                if(picturePath){
+                    await userRawData.update({ picturePath: picturePath });
+                }
+
+                await userRawData.save();
+
+            }else{
+                throwError(500, 'controller/post.js - updatePost - The post must be updated with new information.');
+            }
+        }else{
+            throwError(500, 'controller/post.js - updateComment - No post found.');
+        }
+    }else{
+        throwError(500, 'controller/post.js - updateComment - You must specify the post ID.');
+    }
+}
+
 export async function unsubscribeFromUser(subscriberEmail, creatorEmail){
     try{
         const subscriber = await User.findOne({
@@ -144,5 +182,25 @@ export async function unsubscribeFromUser(subscriberEmail, creatorEmail){
         }
     }catch (err) {
         throwError(500, 'controller/user.js - subscribeToUser - ' + err.message);
+    }
+}
+
+export async function deleteAccount(authEmail, userToDeleteEmail){
+
+    console.log(authEmail, userToDeleteEmail);
+    if(authEmail && userToDeleteEmail && authEmail === userToDeleteEmail){
+        const user = await User.findOne({
+            where: {
+                email: authEmail,
+            }
+        });
+
+        if(user){
+            await user.destroy();
+        }else{
+            throwError(500, 'controller/user.js - deleteUser - No user found.');
+        }
+    }else{
+        throwError(500, 'controller/user.js - deleteUser - You can only delete your user account.');
     }
 }

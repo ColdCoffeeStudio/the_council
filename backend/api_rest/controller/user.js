@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import {Op} from "sequelize";
 
 import User from "../model/user.js";
-import {CustomError} from "../middleware/CustomError.js";
+import {CustomError} from "../../middleware/CustomError.js";
 import Subscription from "../model/subscription.js";
 
 const saltRounds = 10;

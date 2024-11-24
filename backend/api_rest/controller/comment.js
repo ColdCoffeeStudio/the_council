@@ -1,4 +1,4 @@
-import {CustomError} from "../middleware/CustomError.js";
+import {CustomError} from "../../middleware/CustomError.js";
 import Comment from "../model/comment.js";
 import Subscription from "../model/subscription.js";
 import Post from "../model/post.js";

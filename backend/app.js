@@ -3,16 +3,18 @@ import {createServer} from 'node:http';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {io} from 'socket.io-client';
+import {UserSchema} from "./graphql/model/user.js";
+import {PostSchema} from "./graphql/model/post.js";
+import {CommentSchema} from "./graphql/model/comment.js";
+
 // import User from "./model/user.js";
 
-// import Post from "./model/post.js";
-// import Comment from "./model/comment.js";
-// import Subscription from "./model/subscription.js";
-// import {sequelize} from "./data/connection.js";
-import {userRouter} from "./router/user.js";
+import {userRouter} from "./api_rest/router/user.js";
+import {postRouter} from "./api_rest/router/post.js";
+import {commentRouter} from "./api_rest/router/comment.js";
 
-import {postRouter} from "./router/post.js";
-import {commentRouter} from "./router/comment.js";
+import {graphqlHTTP} from "express-graphql";
+
 const app = express();
 const socket = io('http://localhost:2999');
 const server = createServer(app);
@@ -32,6 +34,11 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
+
+app.use('/graphql', graphqlHTTP({
+    schema: [UserSchema, PostSchema, CommentSchema],
+    graphiql: true,
+}));
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/post", postRouter);

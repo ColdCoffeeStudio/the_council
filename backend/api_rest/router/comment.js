@@ -1,7 +1,7 @@
 import express from "express";
-import {CustomError} from "../middleware/CustomError.js";
-import {asyncHandler} from "../utils/asyncHandler.js";
-import {auth} from '../middleware/auth.js';
+import {CustomError} from "../../middleware/CustomError.js";
+import {asyncHandler} from "../../utils/asyncHandler.js";
+import {auth} from '../../middleware/auth.js';
 
 import {allComments, createComment, specificComment, userComments, updateComment, deleteComment} from "../controller/comment.js";
 export const commentRouter = express.Router();

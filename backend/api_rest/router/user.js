@@ -1,8 +1,8 @@
 import express from "express";
 import {connectUser, createUser, deleteAccount, updateAccount, subscribeToUser, unsubscribeFromUser} from "../controller/user.js";
-import {CustomError} from "../middleware/CustomError.js";
-import {asyncHandler} from "../utils/asyncHandler.js";
-import {auth} from "../middleware/auth.js";
+import {CustomError} from "../../middleware/CustomError.js";
+import {asyncHandler} from "../../utils/asyncHandler.js";
+import {auth} from "../../middleware/auth.js";
 export const userRouter = express.Router();
 
 userRouter.post('/login', asyncHandler(async (req, res) => {

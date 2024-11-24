@@ -1,7 +1,7 @@
 import express from "express";
-import {CustomError} from "../middleware/CustomError.js";
-import {asyncHandler} from "../utils/asyncHandler.js";
-import {auth} from '../middleware/auth.js';
+import {CustomError} from "../../middleware/CustomError.js";
+import {asyncHandler} from "../../utils/asyncHandler.js";
+import {auth} from '../../middleware/auth.js';
 
 import {allPosts, postById, createPost, userPosts, postFromFollowed, commentFromPosts, updatePost, deletePost} from "../controller/post.js";
 
